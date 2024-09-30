@@ -33,26 +33,47 @@
     <input type="text" id="terminal-input" placeholder="Enter command...">
 
     <script>
-        const terminalDisplay = document.getElementById('terminal');
-        const terminalInput = document.getElementById('terminal-input');
+        const terminalDisplay = document.getElementById("terminal");
+        const terminalInput = document.getElementById("terminal-input");
+        const commandLog = []; // Array to hold command history
 
-        // Event listener for terminal input
-        terminalInput.addEventListener('keydown', function (event) {
-            if (event.key === 'Enter') {
-                const input = terminalInput.value.trim();
-                terminalInput.value = '';
+        terminalInput.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                const command = terminalInput.value.trim();
+                terminalInput.value = ""; // Clear input
 
-                terminalDisplay.innerHTML += `<p>$ ${input}</p>`; // Display command in the terminal
-
-                if (input.toLowerCase() === 'dowlexis') {
-                    promptKeywords();
-                } else {
-                    terminalDisplay.innerHTML += `<p>${input}: command not found</p>`;
+                if (command) {
+                    commandLog.push(command); // Log the command
+                    processCommand(command);
                 }
-
-                terminalDisplay.scrollTop = terminalDisplay.scrollHeight; // Auto-scroll
             }
         });
+
+        // Function to process user commands
+        function processCommand(command) {
+            switch (command.toLowerCase()) {
+                case "clear":
+                    terminalDisplay.innerHTML = ""; // Clear terminal
+                    break;
+                case "logs":
+                    showLogs();
+                    break;
+                case "dowlexis":
+                    promptKeywords();
+                    break;
+                default:
+                    terminalDisplay.innerHTML += `<p>Invalid command: ${command}</p>`;
+                    break;
+            }
+        }
+
+        // Function to show command logs
+        function showLogs() {
+            terminalDisplay.innerHTML += "<p>Command Logs:</p>";
+            commandLog.forEach(log => {
+                terminalDisplay.innerHTML += `<p>${log}</p>`;
+            });
+        }
 
         // Function to prompt for keywords
         function promptKeywords() {
@@ -66,38 +87,41 @@
 
         // Function to prompt for numbers
         function promptNumbers(keywordsInput) {
-            const numbersInput = prompt("Numbers (e.g., 910-915):");
+            const numbersInput = prompt("Numbers (e.g., 910-915 or 910 911 912):");
             if (numbersInput) {
-                promptPasswordCount(keywordsInput, numbersInput);
+                const numbersArray = numbersInput.split(/[-\s]+/).map(Number); // Split by spaces or hyphen
+                if (numbersArray.length === 2 && !isNaN(numbersArray[0]) && !isNaN(numbersArray[1]) && numbersArray[0] < numbersArray[1]) {
+                    promptPasswordCount(keywordsInput, numbersArray);
+                } else {
+                    terminalDisplay.innerHTML += "<p>Invalid range. Please use the format: 910-915 or 910 911 912.</p>";
+                }
             } else {
                 terminalDisplay.innerHTML += "<p>Operation cancelled.</p>";
             }
         }
 
         // Function to prompt for how many passwords to generate
-        function promptPasswordCount(keywordsInput, numbersInput) {
+        function promptPasswordCount(keywordsInput, numbersArray) {
             const countInput = prompt("How many passwords do you want to generate?");
             const count = parseInt(countInput);
             if (!isNaN(count) && count > 0) {
-                confirmGeneration(keywordsInput, numbersInput, count);
+                confirmGeneration(keywordsInput, numbersArray, count);
             } else {
                 terminalDisplay.innerHTML += "<p>Invalid number. Operation cancelled.</p>";
             }
         }
 
-        // Function to confirm generation
-        function confirmGeneration(keywordsInput, numbersInput, count) {
-            const confirmation = confirm("Are you sure you want to do this? This could get you into trouble.");
-            if (confirmation) {
-                generatePasswords(keywordsInput, numbersInput, count);
+        // Function to confirm and generate passwords
+        function confirmGeneration(keywordsInput, numbersArray, count) {
+            if (confirm("Are you sure you want to do this? This could get you into trouble.")) {
+                generatePasswords(keywordsInput, numbersArray, count);
             } else {
                 terminalDisplay.innerHTML += "<p>Operation cancelled.</p>";
             }
         }
 
         // Function to generate passwords
-        function generatePasswords(keywordsInput, numbersInput, count) {
-            const numbersArray = numbersInput.split('-').map(Number);
+        function generatePasswords(keywordsInput, numbersArray, count) {
             let passwords = [];
 
             // Generate passwords
