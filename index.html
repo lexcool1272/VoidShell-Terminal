@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoidShell Terminal</title>
+    <style>
+        body {
+            background-color: black; /* Black background */
+            color: blue; /* Blue font color */
+            font-family: monospace; /* Monospace font for terminal feel */
+        }
+        #terminal {
+            width: 80%; /* Width of the terminal display */
+            height: 80vh; /* Height of the terminal display */
+            border: 1px solid blue; /* Blue border around the terminal */
+            padding: 10px; /* Padding inside the terminal */
+            overflow-y: auto; /* Allow scrolling if content overflows */
+        }
+        #terminal-input {
+            width: 100%; /* Full width for the input field */
+            border: none; /* No border */
+            background: black; /* Black background for input */
+            color: blue; /* Blue text color for input */
+            outline: none; /* Remove outline */
+        }
+    </style>
+</head>
+<body>
+    <div id="terminal">
+        <p>Welcome to VoidShell. Type 'Dowlexis' to start.</p>
+    </div>
+    <input type="text" id="terminal-input" placeholder="Enter command...">
+
+    <script>
+        const terminalDisplay = document.getElementById('terminal');
+        const terminalInput = document.getElementById('terminal-input');
+
+        // Event listener for terminal input
+        terminalInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                const input = terminalInput.value.trim();
+                terminalInput.value = '';
+
+                terminalDisplay.innerHTML += `<p>$ ${input}</p>`; // Display command in the terminal
+
+                if (input.toLowerCase() === 'dowlexis') {
+                    promptKeywords();
+                } else {
+                    terminalDisplay.innerHTML += `<p>${input}: command not found</p>`;
+                }
+
+                terminalDisplay.scrollTop = terminalDisplay.scrollHeight; // Auto-scroll
+            }
+        });
+
+        // Function to prompt for keywords
+        function promptKeywords() {
+            const keywordsInput = prompt("Keywords (space-separated):");
+            if (keywordsInput) {
+                promptNumbers(keywordsInput);
+            } else {
+                terminalDisplay.innerHTML += "<p>Operation cancelled.</p>";
+            }
+        }
+
+        // Function to prompt for numbers
+        function promptNumbers(keywordsInput) {
+            const numbersInput = prompt("Numbers (e.g., 910-915):");
+            if (numbersInput) {
+                promptPasswordCount(keywordsInput, numbersInput);
+            } else {
+                terminalDisplay.innerHTML += "<p>Operation cancelled.</p>";
+            }
+        }
+
+        // Function to prompt for how many passwords to generate
+        function promptPasswordCount(keywordsInput, numbersInput) {
+            const countInput = prompt("How many passwords do you want to generate?");
+            const count = parseInt(countInput);
+            if (!isNaN(count) && count > 0) {
+                confirmGeneration(keywordsInput, numbersInput, count);
+            } else {
+                terminalDisplay.innerHTML += "<p>Invalid number. Operation cancelled.</p>";
+            }
+        }
+
+        // Function to confirm generation
+        function confirmGeneration(keywordsInput, numbersInput, count) {
+            const confirmation = confirm("Are you sure you want to do this? This could get you into trouble.");
+            if (confirmation) {
+                generatePasswords(keywordsInput, numbersInput, count);
+            } else {
+                terminalDisplay.innerHTML += "<p>Operation cancelled.</p>";
+            }
+        }
+
+        // Function to generate passwords
+        function generatePasswords(keywordsInput, numbersInput, count) {
+            const numbersArray = numbersInput.split('-').map(Number);
+            let passwords = [];
+
+            // Generate passwords
+            for (let i = 0; i < count; i++) {
+                const randomNum = Math.floor(Math.random() * (numbersArray[1] - numbersArray[0] + 1)) + numbersArray[0];
+                const keywords = keywordsInput.split(' ');
+                keywords.forEach(keyword => passwords.push(`${keyword}${randomNum}`));
+            }
+
+            // Display generated passwords
+            terminalDisplay.innerHTML += `<p>Generated passwords:</p>`;
+            passwords.forEach(password => {
+                terminalDisplay.innerHTML += `<p>${password}</p>`;
+            });
+        }
+    </script>
+</body>
+</html>
