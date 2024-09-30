@@ -61,6 +61,12 @@
                 case "dowlexis":
                     promptKeywords();
                     break;
+                case "help":
+                    showHelp();
+                    break;
+                case "keywords":
+                    showKeywords();
+                    break;
                 default:
                     terminalDisplay.innerHTML += `<p>Invalid command: ${command}</p>`;
                     break;
@@ -73,6 +79,28 @@
             commandLog.forEach(log => {
                 terminalDisplay.innerHTML += `<p>${log}</p>`;
             });
+        }
+
+        // Function to show help commands
+        function showHelp() {
+            terminalDisplay.innerHTML += `
+                <p>Available commands:</p>
+                <ul>
+                    <li>dowlexis - Generate passwords</li>
+                    <li>logs - Show command history</li>
+                    <li>clear - Clear the terminal</li>
+                    <li>help - Show help information</li>
+                    <li>keywords - Show available keywords</li>
+                </ul>
+            `;
+        }
+
+        // Function to show available keywords
+        function showKeywords() {
+            terminalDisplay.innerHTML += `
+                <p>Available Keywords:</p>
+                <p>panda, carrot, apple, grapes, banana, tomato, hacker, video, matrix, baby, Stella, John, Chuck, Zach, Zack, George, Nap, carrot, video, matrix, hacker, apple, and more.</p>
+            `;
         }
 
         // Function to prompt for keywords
